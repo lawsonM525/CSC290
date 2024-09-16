@@ -72,8 +72,8 @@ public class Generator {
 
         FSA.State q0 = new FSA.State("q0", false); // Start state
         FSA.State q1 = new FSA.State("q1", true); // Accept state
-        FSA.State q2 = new FSA.State("q2", false);
-        FSA.State q3 = new FSA.State("q3", false);
+        FSA.State q2 = new FSA.State("q2", false); // loop state
+        FSA.State q3 = new FSA.State("q3", false); // loop state
 
         q0.addTransition('1', q1); // q0 --1--> q1
 
