@@ -16,7 +16,7 @@ public class Generator {
         // generate words from FSA2 (1(011)*0*)
         FSA fsa2 = createFSA2();
         System.out.println("\nWords generated from FSA2 (1(011)*0*):");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             String word = gen(fsa2);
             System.out.println(word);
         }
@@ -30,7 +30,8 @@ public class Generator {
         while (true) {
             if (currentState.isAccept) {
                 // random word ending
-                if (rand.nextBoolean()) {
+                int randAccept = (int) (Math.random() * 15);
+                if (randAccept < 2) {
                     break;
                 }
             }
@@ -74,14 +75,19 @@ public class Generator {
         FSA.State q1 = new FSA.State("q1", true); // Accept state
         FSA.State q2 = new FSA.State("q2", false); // loop state
         FSA.State q3 = new FSA.State("q3", false); // loop state
+        FSA.State q4 = new FSA.State("q4", true); // loop state
 
         q0.addTransition('1', q1); // q0 --1--> q1
 
         q1.addTransition('0', q2); // q1 --0--> q2 (start of '011' loop)
-        q2.addTransition('1', q3); // q2 --1--> q3
-        q3.addTransition('1', q1); // q3 --1--> q1 (completing '011' loop)
+        q1.addTransition('0', q4); // q1 --1--> q4 (skipping '011' loop)
 
-        q1.addTransition('0', q1); // q1 --0--> q1 ('0*' at the end)
+        q2.addTransition('1', q3); // q2 --1--> q3
+
+        // q3.addTransition('0', q4); // q3 --0--> q4
+        q3.addTransition('1', q1); // q3 --1--> q1 (repeat the '011' loop)
+
+        q4.addTransition('0', q4); // q1 --0--> q1 ('0*' at the end)
 
         FSA fsa = new FSA(q0);
 
