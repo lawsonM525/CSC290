@@ -5,7 +5,7 @@ class State {
     boolean isAcceptState;
 
     // Map to hold transitions from this state to other states
-    Map<Integer, State> transitionMap = new HashMap<>();
+    Map<Integer, List<State>> transitionMap = new HashMap<>();
 
     // State constructor
     public State(String name, boolean isAcceptState) {
@@ -15,11 +15,14 @@ class State {
 
     // Method to add new transition to trnsitionMap 
     public void addTransition(int symbol, State destinationState) {
-        transitionMap.put(symbol, destinationState);
+        if(!transitionMap.containsKey(symbol)) {
+            transitionMap.put(symbol, new ArrayList<>());
+        }
+        transitionMap.get(symbol).add(destinationState);
     }
 
-    // Method to find the next state from the current state based on the input symbol
-    public State getNexState(int symbol) {
+    // Method to find the possible next states based on the input symbol
+    public List<State> getNexState(int symbol) {
         return transitionMap.get(symbol);
     }
 }
@@ -63,7 +66,9 @@ class Generator {
             sb.append(chosenNextSymbol); 
 
             // Move to the next state
-            currState = currState.getNexState(chosenNextSymbol);
+            List<State> nextStates = currState.getNexState(chosenNextSymbol);
+            // Choose a random next state
+            currState = nextStates.get(random.nextInt(nextStates.size()));
         }
         return sb.toString();
     }
@@ -72,34 +77,35 @@ class Generator {
 public class Main {
     public static void main(String[] args) {
         // =======FSA 1: 0(01)*======
-        State q1 = new State("q1", false);
-        State q2 = new State("q2", true);
-        State q3 = new State("q3", false);
-        State q4 = new State("q4", true);
+        State q0 = new State("q0", false);
+        State q1 = new State("q1", true);
+        State q2 = new State("q2", false);
+        State q3 = new State("q3", true);
 
+        q0.addTransition(0, q1);
         q1.addTransition(0, q2);
-        q2.addTransition(0, q3);
-        q3.addTransition(1, q4);
-        q4.addTransition(0, q3);
+        q2.addTransition(1, q3);
+        q3.addTransition(0, q2);
 
-        FSA fsa1 = new FSA(q1);
+        FSA fsa1 = new FSA(q0);
         // ===========================
 
         // =====FSA 2: 1(011)*0*======
-        State p1 = new State("p1", false);
-        State p2 = new State("p2", true);
-        State p3 = new State("p3", true);
-        State p4 = new State("p4", false);
-        State p5 = new State("p5", true);
+        State p0 = new State("p0", false);
+        State p1 = new State("p1", true);
+        State p2 = new State("p2", false);
+        State p3 = new State("p3", false);
+        State p4 = new State("p4", true);
 
-        p1.addTransition(1, p2);
-        p2.addTransition(0, p3);
-        p3.addTransition(0, p5);
-        p3.addTransition(1, p4);
-        p4.addTransition(1, p5);
-        p5.addTransition(0, p5);
+        p0.addTransition(1, p1);
+        p1.addTransition(0, p2);
+        p1.addTransition(0, p4);
+        p2.addTransition(1, p3);
+        p3.addTransition(1, p1);
+        p4.addTransition(0, p4);
+        
 
-        FSA fsa2 = new FSA(p1);
+        FSA fsa2 = new FSA(p0);
         // ===========================
 
         // Generate words from FSA 1
