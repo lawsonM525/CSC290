@@ -43,7 +43,7 @@ class Generator {
         while(true) {
             if(currState.isAcceptState) {
                 int stopProbability = (int) (Math.random() * 10);
-                if (stopProbability < 3) {
+                if (stopProbability < 3 && sb.length() > 2) {
                     break;
                 }
             }
@@ -70,6 +70,9 @@ class Generator {
 public class Main {
     public static void main(String[] args) {
         /**
+         * !! The word should be roughly 3 - 15 characters long !!
+         * So ignore the single word rule. (This was handled in the stop condition of the generator)
+         * 
          * To create a word that is pronounceable (Completely Seyeon's opinion - could be wrong): 
          * 1. A word can start with a vowel, consonant, or consonant pair.
          *    1-a. The word is pronounceable even if it's just a single vowel.
@@ -118,4 +121,3 @@ public class Main {
         }
     }
 }
-
