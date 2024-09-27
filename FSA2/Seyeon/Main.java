@@ -70,7 +70,7 @@ class Generator {
 public class Main {
     public static void main(String[] args) {
         /**
-         * To create a word that is pronounceable: 
+         * To create a word that is pronounceable (Completely Seyeon's opinion - could be wrong): 
          * 1. A word can start with a vowel, consonant, or consonant pair.
          *    1-a. The word is pronounceable even if it's just a single vowel.
          *    1-b. However, a single consonant/consonant pair is not pronounceable.
