@@ -2,5 +2,5 @@
 
 LET'S DO THIS!!
 
-## First assignment deadile: 9/26
-### To-Do: Get the FSA code done by Monday, 9/16
+## First assignment deadile: 10/10
+### To-Do: Get the FSA ver.2 code done by 10/3
