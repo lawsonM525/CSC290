@@ -56,10 +56,10 @@ def game():
 
         print(f"New FEN position: {board.fen()}")
 
-    if board.is_checkmate():
-        winner = "Bot" if board.turn == chess.WHITE else user_color
-        print(f"Checkmate! {winner} wins!")
-        return
+        if board.is_checkmate():
+            winner = "Bot" if board.turn == chess.WHITE else user_color
+            print(f"Checkmate! {winner} wins!")
+            return
 
 if __name__ == "__main__":
     game()
