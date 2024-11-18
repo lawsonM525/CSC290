@@ -1,3 +1,5 @@
+package FSA.Final;
+
 import java.util.*;
 
 class State {
@@ -13,9 +15,9 @@ class State {
         this.isAcceptState = isAcceptState;
     }
 
-    // Method to add new transition to trnsitionMap 
+    // Method to add new transition to trnsitionMap
     public void addTransition(int symbol, State destinationState) {
-        if(!transitionMap.containsKey(symbol)) {
+        if (!transitionMap.containsKey(symbol)) {
             transitionMap.put(symbol, new ArrayList<>());
         }
         transitionMap.get(symbol).add(destinationState);
@@ -38,24 +40,25 @@ class FSA {
 
 class Generator {
 
-    public Generator() {}
-    
+    public Generator() {
+    }
+
     public String gen(FSA fsa) {
         StringBuilder sb = new StringBuilder();
         State currState = fsa.startState;
 
-        while(true) {
-            if(currState.isAcceptState) {
+        while (true) {
+            if (currState.isAcceptState) {
                 // Reduced the chance of stopping to make longer words
-                int headOrTail = (int)(Math.random() * 10);
-                if(headOrTail < 2) {
+                int headOrTail = (int) (Math.random() * 10);
+                if (headOrTail < 2) {
                     break;
                 }
             }
 
             // List of possible next symbols
             List<Integer> nextSymbols = new ArrayList<>(currState.transitionMap.keySet());
-            if(nextSymbols.isEmpty()) {
+            if (nextSymbols.isEmpty()) {
                 break; // No more transitions available
             }
 
@@ -63,7 +66,7 @@ class Generator {
             Random random = new Random();
             int randomNum = random.nextInt(nextSymbols.size());
             int chosenNextSymbol = nextSymbols.get(randomNum);
-            sb.append(chosenNextSymbol); 
+            sb.append(chosenNextSymbol);
 
             // Move to the next state
             List<State> nextStates = currState.getNexState(chosenNextSymbol);
@@ -103,7 +106,6 @@ public class Main {
         p2.addTransition(1, p3);
         p3.addTransition(1, p1);
         p4.addTransition(0, p4);
-        
 
         FSA fsa2 = new FSA(p0);
         // ===========================
@@ -111,15 +113,14 @@ public class Main {
         // Generate words from FSA 1
         Generator generator = new Generator();
         System.out.println("Words from FSA 1 - 0(01)*: ");
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println(generator.gen(fsa1));
         }
 
         // Generate words from FSA 2
         System.out.println("\nWords from FSA 2 - 1(011)*0*: ");
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println(generator.gen(fsa2));
         }
     }
 }
-
