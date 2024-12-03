@@ -2,6 +2,7 @@
 """
 -king given value
 -added if-statement to pick between two moves if they are of equal value
+-alpha-beta pruning
 """
 
 import chess
@@ -12,7 +13,8 @@ from datetime import datetime
 scores = {'p':1, 'n':3, 'b':3, 'r':5, 'q':9, 'k':25,
          'P':-1, 'N':-3, 'B':-3, 'R':-5, 'Q':-9, 'K':-25}
 
-def minimax(board, depth, maxPlayer):
+#added alpha-beta pruning
+def minimax(board, depth, alpha, beta, maxPlayer):
     if depth == 0 or board.is_game_over():
         return 
     valid_moves = list(board.legal_moves)
@@ -26,18 +28,23 @@ def minimax(board, depth, maxPlayer):
             oppPos = board.piece_at(chess.parse_square((str(i))[2:4])) 
             value = scores[str(oppPos)]
             board.push(i) 
-            sampleScore = minimax(board, depth-1, False)
+            sampleScore = minimax(board, depth-1, alpha, beta, False)
             value += sampleScore
-            #if this move has the same value as another score, randomly choose between the current and previous 
+            #if this move has the same value as another score, randomly choose between the current and previous - new start
             if value == best_score:
                 flip = random.randint(0, 1)
                 if flip == 0:
                     best_score = value
                     best_move = i 
+            # new end
             if value > best_score:
                 best_score = value
                 best_move = i
             board.pop() 
+            max_score = max(max_score, sampleScore)
+            alpha = max(alpha, sampleScore)
+            if beta <= alpha:
+                break
         return best_move
     else:
         best_opp_score = float('inf')
@@ -45,18 +52,23 @@ def minimax(board, depth, maxPlayer):
             pos = board.piece_at(chess.parse_square((str(i))[2:4])) 
             value = scores[str(pos)]
             board.push(j) 
-            sampleScore = minimax(board, depth-1, True)
+            sampleScore = minimax(board, depth-1, alpha, beta, True)
             value += sampleScore
-            #if this move has the same value as another score, randomly choose between the current and previous 
+            #if this move has the same value as another score, randomly choose between the current and previous - new start
             if value == best_score:
                 flip = random.randint(0, 1)
                 if flip == 0:
                     best_score = value
                     best_move = i 
+            # new end
             if value < best_opp_score:
                 best_opp_score = value
                 best_move = j
             board.pop() 
+            min_score = min(min_score, sampleScore)
+            beta = min(beta, sampleScore)
+            if beta <= alpha:
+                break
         return best_move
 
 
