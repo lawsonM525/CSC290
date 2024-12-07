@@ -3,15 +3,39 @@
 -king given value
 -added if-statement to pick between two moves if they are of equal value
 -alpha-beta pruning
+-knowledge of change: check for repeats
 """
 
 import chess
 import random
 from datetime import datetime
+from queue import Queue
 
 # Added king as an arbitrary large value
 scores = {'p':1, 'n':3, 'b':3, 'r':5, 'q':9, 'k':25,
          'P':-1, 'N':-3, 'B':-3, 'R':-5, 'Q':-9, 'K':-25}
+
+#queue for moves
+move_queue = Queue(maxsize = 5)
+
+#check queue
+def check_queue(queue, move):
+    if queue.full(): 
+        repeats_allowed = 3 
+        count = 0
+        for i in queue: #check if the queue has the same move repeated 
+            if i == move:
+                count += 1
+                if (count == repeats_allowed): #it's repeated enough times, skip this move
+                    return False
+        move_queue.get() #pop last move
+        move_queue.put(move) #insert move at the end
+
+    else: #queue is not full, continue since it is early game
+        move_queue.put(move) # insert the move like normal
+    
+    return True
+
 
 #added alpha-beta pruning
 def minimax(board, depth, alpha, beta, maxPlayer):
@@ -28,23 +52,22 @@ def minimax(board, depth, alpha, beta, maxPlayer):
             oppPos = board.piece_at(chess.parse_square((str(i))[2:4])) 
             value = scores[str(oppPos)]
             board.push(i) 
-            sampleScore = minimax(board, depth-1, alpha, beta, False)
-            value += sampleScore
-            #if this move has the same value as another score, randomly choose between the current and previous - new start
-            if value == best_score:
-                flip = random.randint(0, 1)
-                if flip == 0:
+            if check_queue(move_queue, i) is True:
+                sampleScore = minimax(board, depth-1, alpha, beta, False)
+                value += sampleScore
+                if value == best_score:
+                    flip = random.randint(0, 1)
+                    if flip == 0:
+                        best_score = value
+                        best_move = i 
+                if value > best_score:
                     best_score = value
-                    best_move = i 
-            # new end
-            if value > best_score:
-                best_score = value
-                best_move = i
+                    best_move = i
+                max_score = max(max_score, sampleScore)
+                alpha = max(alpha, sampleScore)
+                if beta <= alpha:
+                    break
             board.pop() 
-            max_score = max(max_score, sampleScore)
-            alpha = max(alpha, sampleScore)
-            if beta <= alpha:
-                break
         return best_move
     else:
         best_opp_score = float('inf')
@@ -52,23 +75,24 @@ def minimax(board, depth, alpha, beta, maxPlayer):
             pos = board.piece_at(chess.parse_square((str(i))[2:4])) 
             value = scores[str(pos)]
             board.push(j) 
-            sampleScore = minimax(board, depth-1, alpha, beta, True)
-            value += sampleScore
-            #if this move has the same value as another score, randomly choose between the current and previous - new start
-            if value == best_score:
-                flip = random.randint(0, 1)
-                if flip == 0:
-                    best_score = value
-                    best_move = i 
-            # new end
-            if value < best_opp_score:
-                best_opp_score = value
-                best_move = j
+            if check_queue(move_queue, j) is True:
+                sampleScore = minimax(board, depth-1, alpha, beta, True)
+                value += sampleScore
+                #if this move has the same value as another score, randomly choose between the current and previous - new start
+                if value == best_score:
+                    flip = random.randint(0, 1)
+                    if flip == 0:
+                        best_score = value
+                        best_move = i 
+                # new end
+                if value < best_opp_score:
+                    best_opp_score = value
+                    best_move = j
+                min_score = min(min_score, sampleScore)
+                beta = min(beta, sampleScore)
+                if beta <= alpha:
+                    break
             board.pop() 
-            min_score = min(min_score, sampleScore)
-            beta = min(beta, sampleScore)
-            if beta <= alpha:
-                break
         return best_move
 
 
